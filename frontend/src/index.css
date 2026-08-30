@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#FBF9F4] text-slate-800 antialiased;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer components {
+  /* Storytelling / Editorial Diary custom utilities (Warm book paper aesthetic) */
+  .brutal-card {
+    @apply border border-[#E0D4C3] shadow-[0_8px_30px_rgba(0,0,0,0.03)] rounded-[24px] bg-[#FCFAF6] transition-all;
+  }
+  
+  .brutal-button {
+    @apply border border-slate-700 bg-slate-800 text-white font-sans rounded-xl hover:bg-slate-700 hover:shadow-md active:scale-[0.98] transition-all cursor-pointer;
+  }
+  
+  .brutal-input {
+    @apply border border-[#D8CBB5] rounded-xl px-3.5 py-2.5 bg-[#FCFAF6] focus:border-slate-500 focus:bg-white transition-all outline-none font-medium text-slate-800;
+  }
+  
+  .brutal-badge {
+    @apply border border-[#D8CBB5] text-slate-500 font-sans text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FCFAF6];
+  }
+}
+
+/* Custom scrollbar for control panel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FBF9F4;
+}
+::-webkit-scrollbar-thumb {
+  background: #C4B59D;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A8987E;
+}
+
+/* Hide number input spinners (up/down arrow buttons) */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}

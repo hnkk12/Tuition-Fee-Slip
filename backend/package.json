@@ -1,0 +1,14 @@
+{
+  "name": "tuition-fee-slip-backend",
+  "version": "1.0.0",
+  "description": "Simple Express.js API backend for Tuition Fee Slip Generator",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}

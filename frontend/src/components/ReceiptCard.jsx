@@ -72,7 +72,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
       <div
         ref={ref}
         id="tuition-receipt"
-        className="w-[440px] flex flex-col gap-4 p-6 rounded-[28px] border-[3px] shadow-[0_10px_35px_rgba(0,0,0,0.05)]"
+        className="w-[480px] flex flex-col gap-4 p-6 rounded-[28px] border-[3px] shadow-[0_10px_35px_rgba(0,0,0,0.05)]"
         style={{
           fontFamily: '"Baloo 2", sans-serif',
           color: theme.headerText,
@@ -80,15 +80,15 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
           borderColor: theme.border,
         }}
       >
-        {/* 1. Header: teacher name & phone */}
-        <div className="flex justify-between items-center text-[13px] font-bold gap-2">
-          <span className="truncate">GV. {teacherName}</span>
+        {/* 1. Header: teacher name & phone (freeform, no fixed title prefix) */}
+        <div className="flex justify-between items-center text-[14px] font-bold gap-2">
+          <span className="truncate">{teacherName}</span>
           {teacherPhone && <span className="truncate shrink-0">SĐT. {teacherPhone}</span>}
         </div>
 
         {/* 2. Title */}
         <h1
-          className="text-center text-[25px] font-extrabold uppercase leading-tight tracking-wide"
+          className="text-center text-[27px] font-extrabold uppercase leading-tight tracking-wide"
           style={{ color: theme.primary }}
         >
           Học Phí Tháng {monthNum}/{periodYear}
@@ -99,7 +99,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
           {/* Student info card */}
           <div className="rounded-[20px] border-2 p-3.5 flex flex-col gap-2" style={{ borderColor: theme.border }}>
             <h2
-              className="text-[12.5px] font-extrabold uppercase pb-1.5 border-b-2"
+              className="text-[13.5px] font-extrabold uppercase pb-1.5 border-b-2"
               style={{ color: theme.primary, borderColor: theme.border }}
             >
               Thông Tin Học Sinh
@@ -111,10 +111,10 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
                   className="flex justify-between items-baseline gap-1 border-b border-dashed"
                   style={{ borderColor: theme.border }}
                 >
-                  <span className="text-[9.5px] font-semibold shrink-0" style={{ color: theme.headerSub }}>
+                  <span className="text-[10.5px] font-semibold shrink-0" style={{ color: theme.headerSub }}>
                     {row.label}:
                   </span>
-                  <span className="text-[11.5px] font-extrabold text-right truncate" style={{ color: theme.headerText }}>
+                  <span className="text-[12.5px] font-extrabold text-right truncate" style={{ color: theme.headerText }}>
                     {row.value}
                   </span>
                 </div>
@@ -122,12 +122,12 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
             </div>
             {attendedSessions.length > 0 && (
               <div className="flex flex-col gap-1.5 mt-0.5">
-                <span className="text-[9.5px] font-semibold" style={{ color: theme.headerSub }}>Ngày học:</span>
+                <span className="text-[10.5px] font-semibold" style={{ color: theme.headerSub }}>Ngày học:</span>
                 <div className="grid grid-cols-4 gap-1.5">
                   {attendedSessions.map((s, idx) => (
                     <span
                       key={s.id || idx}
-                      className="text-[9.5px] font-extrabold text-center rounded-full py-1 px-0.5 leading-none"
+                      className="text-[10.5px] font-extrabold text-center rounded-full py-1 px-0.5 leading-none"
                       style={{ backgroundColor: theme.accent, color: theme.primary }}
                     >
                       {s.date}
@@ -140,14 +140,14 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
 
           {/* Total fee + QR + bank info card */}
           <div className="rounded-[20px] border-2 p-3.5 flex flex-col items-center text-center gap-1.5" style={{ borderColor: theme.border }}>
-            <span className="text-[10px] font-extrabold uppercase tracking-wide" style={{ color: theme.headerSub }}>
+            <span className="text-[11px] font-extrabold uppercase tracking-wide" style={{ color: theme.headerSub }}>
               Tổng Học Phí
             </span>
-            <span className="text-[18px] font-extrabold leading-tight" style={{ color: theme.primary }}>
+            <span className="text-[20px] font-extrabold leading-tight" style={{ color: theme.primary }}>
               {formatCurrency(totalFee)}
             </span>
             <div
-              className="w-[112px] h-[112px] border-2 rounded-xl overflow-hidden flex items-center justify-center p-1 bg-white shrink-0"
+              className="w-[120px] h-[120px] border-2 rounded-xl overflow-hidden flex items-center justify-center p-1 bg-white shrink-0"
               style={{ borderColor: theme.border }}
             >
               <img
@@ -158,19 +158,19 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
               />
             </div>
             {(bankName || accountNumber || accountHolder) && (
-              <div className="flex flex-col gap-1 mt-0.5 w-full">
+              <div className="flex flex-col gap-0.5 mt-0.5 w-full">
                 {bankName && (
-                  <span className="text-[11px] font-bold truncate" style={{ color: theme.headerText }}>
+                  <span className="text-[11px] font-semibold break-words" style={{ color: theme.headerText }}>
                     Ngân hàng: {bankLabel}
                   </span>
                 )}
                 {accountNumber && (
-                  <span className="text-[11px] font-bold truncate" style={{ color: theme.headerText }}>
+                  <span className="text-[11px] font-semibold break-words" style={{ color: theme.headerText }}>
                     Số TK: {accountNumber}
                   </span>
                 )}
                 {accountHolder && (
-                  <span className="text-[11px] font-bold truncate" style={{ color: theme.headerText }}>
+                  <span className="text-[11px] font-semibold break-words" style={{ color: theme.headerText }}>
                     Chủ TK: {accountHolder}
                   </span>
                 )}
@@ -183,16 +183,16 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
         {(overviewNotes.some(Boolean) || visibleSubjectSections.length > 0) && (
           <div className="flex flex-col gap-2">
             <h2
-              className="text-[14.5px] font-extrabold uppercase pb-1.5 border-b-2"
+              className="text-[15.5px] font-extrabold uppercase pb-1.5 border-b-2"
               style={{ color: theme.primary, borderColor: theme.border }}
             >
               Nhận Xét Học Tập
             </h2>
             {overviewNotes.some(Boolean) && (
               <div className="flex flex-col gap-0.5">
-                <span className="text-[11px] font-extrabold" style={{ color: theme.primary }}>Tổng quan:</span>
+                <span className="text-[12px] font-extrabold" style={{ color: theme.primary }}>Tổng quan:</span>
                 {overviewNotes.filter(Boolean).map((note, i) => (
-                  <p key={i} className="text-[10.5px] font-medium leading-snug" style={{ color: theme.headerText }}>
+                  <p key={i} className="text-[11.5px] font-medium leading-snug" style={{ color: theme.headerText }}>
                     + {note}
                   </p>
                 ))}
@@ -200,9 +200,9 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
             )}
             {visibleSubjectSections.map((sec) => (
               <div key={sec.id} className="flex flex-col gap-0.5">
-                <span className="text-[11px] font-extrabold" style={{ color: theme.primary }}>{sec.title}:</span>
+                <span className="text-[12px] font-extrabold" style={{ color: theme.primary }}>{sec.title}:</span>
                 {sec.notes.filter(Boolean).map((note, i) => (
-                  <p key={i} className="text-[10.5px] font-medium leading-snug" style={{ color: theme.headerText }}>
+                  <p key={i} className="text-[11.5px] font-medium leading-snug" style={{ color: theme.headerText }}>
                     + {note}
                   </p>
                 ))}
@@ -217,7 +217,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
             className="rounded-2xl py-2.5 px-2 text-center overflow-hidden"
             style={{ backgroundColor: theme.banner }}
           >
-            <span className="text-[9px] font-extrabold whitespace-nowrap" style={{ color: theme.primary }}>
+            <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: theme.primary }}>
               {footerNote}
             </span>
           </div>

@@ -317,7 +317,7 @@ const ControlPanel = ({
                   type="text"
                   value={data.teacherName}
                   onChange={(e) => handleChange('teacherName', e.target.value)}
-                  placeholder="Cô Hằng"
+                  placeholder="VD: GV. Cô Hằng / Gia sư. Minh"
                   className="brutal-input"
                 />
               </div>

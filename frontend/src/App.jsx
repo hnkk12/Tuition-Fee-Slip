@@ -84,7 +84,7 @@ function App() {
       periodMonth: '08',
       periodYear: '2026',
       studentName: 'Duy Anh',
-      teacherName: localStorage.getItem('ts_teacherName') || 'Nguyễn Thanh Thúy',
+      teacherName: localStorage.getItem('ts_teacherName') || 'GV. Nguyễn Thanh Thúy',
       teacherPhone: localStorage.getItem('ts_teacherPhone') || '0978783058',
       unitPrice: 120000,
       totalHours: '26.6',

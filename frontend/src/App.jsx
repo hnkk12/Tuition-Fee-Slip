@@ -6,6 +6,17 @@ import ControlPanel from './components/ControlPanel';
 import ReceiptCard from './components/ReceiptCard';
 
 const THEMES = {
+  eduBlue: {
+    name: 'Xanh Học Đường (Mặc định)',
+    primary: '#1F4E8C', // Editorial Blue
+    primaryHover: '#163C6D',
+    accent: '#EAF2FC',  // Light Blue pill/accent
+    bgCard: '#FFFFFF',
+    border: '#BFD7F5',
+    banner: '#DCEAFC',
+    headerText: '#16305A',
+    headerSub: '#8496AE',
+  },
   editorialTerracotta: {
     name: 'Đất Nung (Mặc định)',
     primary: '#C05C46', // Terracotta Red
@@ -53,36 +64,63 @@ const THEMES = {
 };
 
 const DEFAULT_SESSIONS = [
-  { id: '1', date: '04/05', status: 'Học' },
-  { id: '2', date: '06/05', status: 'Học' },
-  { id: '3', date: '11/05', status: 'Nghỉ' },
-  { id: '4', date: '13/05', status: 'Học' },
-  { id: '5', date: '18/05', status: 'Học' },
-  { id: '6', date: '20/05', status: 'Bù' },
-  { id: '7', date: '25/05', status: 'Học' },
-  { id: '8', date: '27/05', status: 'Học' },
+  { id: '1', date: '04/08', status: 'Học' },
+  { id: '2', date: '07/08', status: 'Học' },
+  { id: '3', date: '09/08', status: 'Học' },
+  { id: '4', date: '12/08', status: 'Học' },
+  { id: '5', date: '13/08', status: 'Học' },
+  { id: '6', date: '17/08', status: 'Học' },
+  { id: '7', date: '18/08', status: 'Học' },
+  { id: '8', date: '21/08', status: 'Học' },
+  { id: '9', date: '24/08', status: 'Học' },
+  { id: '10', date: '26/08', status: 'Học' },
+  { id: '11', date: '28/08', status: 'Học' },
 ];
 
 function App() {
   const [data, setData] = useState(() => {
     return {
-      className: localStorage.getItem('ts_className') || 'Toán 10A1',
-      periodMonth: '05',
+      className: localStorage.getItem('ts_className') || 'Lớp 9',
+      periodMonth: '08',
       periodYear: '2026',
-      studentName: 'Nguyễn Minh An',
-      teacherName: localStorage.getItem('ts_teacherName') || 'Cô Hằng',
-      unitPrice: 150000,
-      feedback: 'Bé An tiếp thu bài rất tốt, làm bài tập đầy đủ. Phần hình học không gian cần chú ý vẽ hình chính xác hơn một chút để tránh nhầm lẫn. Tháng sau cô sẽ kèm thêm phần này.',
-      bankName: localStorage.getItem('ts_bankName') || 'MB',
-      accountNumber: localStorage.getItem('ts_accountNumber') || '0987654321',
-      accountHolder: localStorage.getItem('ts_accountHolder') || 'NGUYEN THI HANG',
+      studentName: 'Duy Anh',
+      teacherName: localStorage.getItem('ts_teacherName') || 'Nguyễn Thanh Thúy',
+      teacherPhone: localStorage.getItem('ts_teacherPhone') || '0978783058',
+      unitPrice: 120000,
+      totalHours: '26.6',
+      overviewNotes: [
+        'Chưa chủ động trong quá trình học, thường xuyên thiếu BTVN, trong giờ học hay sao nhãng, nói chuyện riêng, không ôn bài về nhà.',
+        'Trình bày bài chưa chỉn chu, làm ẩu.'
+      ],
+      subjectSections: [
+        {
+          id: 'sub-1',
+          title: 'Đại số',
+          notes: [
+            'Tư duy số học tốt, nắm được cách giải hệ phương trình, bài toán liên quan.',
+            'Thường xuyên sai các lỗi nhỏ vặt trong tính toán.'
+          ]
+        },
+        {
+          id: 'sub-2',
+          title: 'Hình học',
+          notes: [
+            'Giải được các bài toán lượng giác cơ bản',
+            'Cần ôn tập lại các kiến thức liên quan đến tam giác đồng dạng, song song, các đường đặc biệt trong tam giác.'
+          ]
+        }
+      ],
+      footerNote: 'Phụ huynh vui lòng kiểm tra thông tin học phí và lịch học. Cháu cảm ơn ạ.',
+      bankName: localStorage.getItem('ts_bankName') || 'TCB',
+      accountNumber: localStorage.getItem('ts_accountNumber') || '0978783058',
+      accountHolder: localStorage.getItem('ts_accountHolder') || 'NGUYEN THANH THUY',
       qrCodeType: 'vietqr',
       customQrUrl: '',
     };
   });
 
   const [sessions, setSessions] = useState(DEFAULT_SESSIONS);
-  const [selectedThemeKey, setSelectedThemeKey] = useState('editorialTerracotta');
+  const [selectedThemeKey, setSelectedThemeKey] = useState('eduBlue');
   const [qrBase64, setQrBase64] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [mobileView, setMobileView] = useState('editor'); // 'editor' | 'preview'
@@ -93,10 +131,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('ts_className', data.className);
     localStorage.setItem('ts_teacherName', data.teacherName);
+    localStorage.setItem('ts_teacherPhone', data.teacherPhone);
     localStorage.setItem('ts_bankName', data.bankName);
     localStorage.setItem('ts_accountNumber', data.accountNumber);
     localStorage.setItem('ts_accountHolder', data.accountHolder);
-  }, [data.className, data.teacherName, data.bankName, data.accountNumber, data.accountHolder]);
+  }, [data.className, data.teacherName, data.teacherPhone, data.bankName, data.accountNumber, data.accountHolder]);
 
   const receiptRef = useRef(null);
   const currentTheme = THEMES[selectedThemeKey];

@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { POPULAR_BANKS } from './ReceiptCard';
-import { 
-  User, 
-  BookOpen, 
-  Calendar, 
-  DollarSign, 
-  CreditCard, 
-  Plus, 
-  Trash2, 
-  Check, 
-  QrCode, 
-  Upload, 
-  Layers, 
+import {
+  User,
+  BookOpen,
+  Calendar,
+  DollarSign,
+  CreditCard,
+  Plus,
+  Trash2,
+  Check,
+  QrCode,
+  Upload,
+  Layers,
   Clock,
-  Sparkles
+  Sparkles,
+  MessageSquare,
+  Phone
 } from 'lucide-react';
+
+const genId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 const ControlPanel = ({ 
   data, 
@@ -42,6 +46,67 @@ const ControlPanel = ({
       }
       return { ...prev, [field]: updatedValue };
     });
+  };
+
+  // --- Simple string-array field helpers (overviewNotes) ---
+  const handleArrayItemChange = (field, index, value) => {
+    setData(prev => {
+      const arr = [...prev[field]];
+      arr[index] = value;
+      return { ...prev, [field]: arr };
+    });
+  };
+
+  const handleAddArrayItem = (field, value = '') => {
+    setData(prev => ({ ...prev, [field]: [...prev[field], value] }));
+  };
+
+  const handleRemoveArrayItem = (field, index) => {
+    setData(prev => ({ ...prev, [field]: prev[field].filter((_, i) => i !== index) }));
+  };
+
+  // --- Subject sections helpers (nested notes list per subject) ---
+  const handleSubjectTitleChange = (id, title) => {
+    setData(prev => ({
+      ...prev,
+      subjectSections: prev.subjectSections.map(s => (s.id === id ? { ...s, title } : s))
+    }));
+  };
+
+  const handleSubjectNoteChange = (id, noteIdx, value) => {
+    setData(prev => ({
+      ...prev,
+      subjectSections: prev.subjectSections.map(s =>
+        s.id === id ? { ...s, notes: s.notes.map((n, i) => (i === noteIdx ? value : n)) } : s
+      )
+    }));
+  };
+
+  const handleAddSubjectNote = (id) => {
+    setData(prev => ({
+      ...prev,
+      subjectSections: prev.subjectSections.map(s => (s.id === id ? { ...s, notes: [...s.notes, ''] } : s))
+    }));
+  };
+
+  const handleRemoveSubjectNote = (id, noteIdx) => {
+    setData(prev => ({
+      ...prev,
+      subjectSections: prev.subjectSections.map(s =>
+        s.id === id ? { ...s, notes: s.notes.filter((_, i) => i !== noteIdx) } : s
+      )
+    }));
+  };
+
+  const handleAddSubject = () => {
+    setData(prev => ({
+      ...prev,
+      subjectSections: [...prev.subjectSections, { id: genId(), title: '', notes: [''] }]
+    }));
+  };
+
+  const handleRemoveSubject = (id) => {
+    setData(prev => ({ ...prev, subjectSections: prev.subjectSections.filter(s => s.id !== id) }));
   };
 
   // Local QR upload handler
@@ -184,18 +249,29 @@ const ControlPanel = ({
           <User className="w-3.5 h-3.5" />
           HỌC VIÊN
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('sessions')}
           className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-1 transition-all font-serif ${
-            activeTab === 'sessions' 
-              ? 'bg-white text-slate-800 shadow-sm border border-[#D8CBB5]' 
+            activeTab === 'sessions'
+              ? 'bg-white text-slate-800 shadow-sm border border-[#D8CBB5]'
               : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
           NHẬT KÝ ({sessions.length})
         </button>
-        <button 
+        <button
+          onClick={() => setActiveTab('notes')}
+          className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-1 transition-all font-serif ${
+            activeTab === 'notes'
+              ? 'bg-white text-slate-800 shadow-sm border border-[#D8CBB5]'
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          NHẬN XÉT
+        </button>
+        <button
           onClick={() => setActiveTab('payment')}
           className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-1 transition-all font-serif ${
             activeTab === 'payment' 
@@ -237,11 +313,37 @@ const ControlPanel = ({
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-slate-655 font-serif">Người Hướng Dẫn / Giáo Viên</label>
-                <input 
-                  type="text" 
-                  value={data.teacherName} 
+                <input
+                  type="text"
+                  value={data.teacherName}
                   onChange={(e) => handleChange('teacherName', e.target.value)}
                   placeholder="Cô Hằng"
+                  className="brutal-input"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-655 font-serif">Số Điện Thoại Giáo Viên</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={data.teacherPhone}
+                    onChange={(e) => handleChange('teacherPhone', e.target.value)}
+                    placeholder="0978783058"
+                    className="brutal-input w-full pl-9 font-mono"
+                  />
+                  <Phone className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-655 font-serif">Tổng Số Giờ Học</label>
+                <input
+                  type="text"
+                  value={data.totalHours}
+                  onChange={(e) => handleChange('totalHours', e.target.value)}
+                  placeholder="26.6"
                   className="brutal-input"
                 />
               </div>
@@ -250,9 +352,9 @@ const ControlPanel = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-slate-655 font-serif">Học Viên Chính</label>
-                <input 
-                  type="text" 
-                  value={data.studentName} 
+                <input
+                  type="text"
+                  value={data.studentName}
                   onChange={(e) => handleChange('studentName', e.target.value)}
                   placeholder="Nguyễn Minh An"
                   className="brutal-input"
@@ -296,17 +398,6 @@ const ControlPanel = ({
                 />
                 <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
               </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-655 font-serif">Nhật Ký/Lời Góp Ý Của Giáo Viên</label>
-              <textarea 
-                value={data.feedback} 
-                onChange={(e) => handleChange('feedback', e.target.value)}
-                placeholder="Lời nhận xét gửi phụ huynh..."
-                rows={3}
-                className="brutal-input resize-none"
-              />
             </div>
           </div>
         )}
@@ -492,6 +583,114 @@ const ControlPanel = ({
               <Plus className="w-4 h-4" />
               THÊM GHI CHÉP NGÀY MỚI
             </button>
+          </div>
+        )}
+
+        {/* TAB: Nhận xét học tập & Lộ trình sắp tới */}
+        {activeTab === 'notes' && (
+          <div className="flex flex-col gap-5 animate-fade-in">
+            {/* Overview bullet notes */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold font-serif text-slate-800">TỔNG QUAN</span>
+                <span className="brutal-badge">{data.overviewNotes.length} dòng</span>
+              </div>
+              {data.overviewNotes.map((note, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={note}
+                    onChange={(e) => handleArrayItemChange('overviewNotes', i, e.target.value)}
+                    placeholder="Nhận xét tổng quan..."
+                    className="brutal-input flex-1"
+                  />
+                  <button
+                    onClick={() => handleRemoveArrayItem('overviewNotes', i)}
+                    className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => handleAddArrayItem('overviewNotes')}
+                className="w-full py-2 border border-dashed border-[#D8CBB5] hover:border-solid hover:bg-[#FAF3E0] text-slate-700 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                THÊM DÒNG NHẬN XÉT
+              </button>
+            </div>
+
+            {/* Subject-specific sections */}
+            <div className="flex flex-col gap-3 border-t border-[#D8CBB5] pt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold font-serif text-slate-800">NHẬN XÉT THEO CHUYÊN ĐỀ</span>
+                <span className="brutal-badge">{data.subjectSections.length} mục</span>
+              </div>
+              {data.subjectSections.map((sec) => (
+                <div key={sec.id} className="border border-[#E0D4C3] rounded-xl p-3 bg-white shadow-sm flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={sec.title}
+                      onChange={(e) => handleSubjectTitleChange(sec.id, e.target.value)}
+                      placeholder="Tên chuyên đề (VD: Đại số)"
+                      className="brutal-input flex-1 font-bold"
+                    />
+                    <button
+                      onClick={() => handleRemoveSubject(sec.id)}
+                      className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all shrink-0"
+                      title="Xóa chuyên đề"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  {sec.notes.map((note, i) => (
+                    <div key={i} className="flex items-center gap-2 pl-3">
+                      <span className="text-slate-400 text-xs shrink-0">+</span>
+                      <input
+                        type="text"
+                        value={note}
+                        onChange={(e) => handleSubjectNoteChange(sec.id, i, e.target.value)}
+                        placeholder="Nhận xét..."
+                        className="brutal-input flex-1 text-xs py-2"
+                      />
+                      <button
+                        onClick={() => handleRemoveSubjectNote(sec.id, i)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all shrink-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => handleAddSubjectNote(sec.id)}
+                    className="ml-3 text-[10px] font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 mt-0.5"
+                  >
+                    <Plus className="w-3 h-3" /> Thêm dòng
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={handleAddSubject}
+                className="w-full py-2 border border-dashed border-[#D8CBB5] hover:border-solid hover:bg-[#FAF3E0] text-slate-700 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                THÊM CHUYÊN ĐỀ
+              </button>
+            </div>
+
+            {/* Footer note */}
+            <div className="flex flex-col gap-1.5 border-t border-[#D8CBB5] pt-4">
+              <label className="text-xs font-bold text-slate-655 font-serif">Ghi Chú Cuối Phiếu</label>
+              <textarea
+                value={data.footerNote}
+                onChange={(e) => handleChange('footerNote', e.target.value)}
+                placeholder="Phụ huynh vui lòng kiểm tra thông tin học phí và lịch học. Cháu cảm ơn ạ."
+                rows={2}
+                className="brutal-input resize-none"
+              />
+            </div>
           </div>
         )}
 

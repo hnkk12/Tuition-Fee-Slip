@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { POPULAR_BANKS } from './ReceiptCard';
+import { computeTotalFee } from '../utils/fee';
 import {
   User,
   BookOpen,
@@ -387,17 +388,62 @@ const ControlPanel = ({
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-slate-655 font-serif">Chi Phí Mỗi Buổi Học (VNĐ)</label>
-              <div className="relative">
-                <input 
-                  type="number" 
-                  value={data.unitPrice} 
-                  onChange={(e) => handleChange('unitPrice', parseFloat(e.target.value) || 0)}
-                  placeholder="150000"
-                  step="10000"
-                  className="brutal-input w-full pl-9 font-mono"
-                />
-                <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+
+              {/* Fee calculation mode: per-session (auto multiply) vs fixed manual total */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange('feeMode', 'perSession')}
+                  className={`py-2 px-3 border rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 shadow-sm ${
+                    data.feeMode !== 'fixed'
+                      ? 'bg-emerald-700 text-white shadow-none border-emerald-700'
+                      : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                  }`}
+                >
+                  <span className="font-bold text-[10px] font-serif">THEO TỪNG BUỔI</span>
+                  <span className={`text-[8px] font-bold ${data.feeMode !== 'fixed' ? 'text-emerald-150 opacity-90' : 'text-emerald-650'}`}>
+                    Tự nhân theo số buổi học
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChange('feeMode', 'fixed')}
+                  className={`py-2 px-3 border rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 shadow-sm ${
+                    data.feeMode === 'fixed'
+                      ? 'bg-slate-800 text-white shadow-none border-slate-800'
+                      : 'bg-white text-slate-700 border-[#D8CBB5] hover:bg-[#FCFAF6]'
+                  }`}
+                >
+                  <span className="font-bold text-[10px] font-serif">TỔNG CỐ ĐỊNH</span>
+                  <span className="text-[8px] opacity-70">Tự nhập trọn gói (1, 2 tháng...)</span>
+                </button>
               </div>
+
+              {data.feeMode === 'fixed' ? (
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={data.fixedTotalFee}
+                    onChange={(e) => handleChange('fixedTotalFee', parseFloat(e.target.value) || 0)}
+                    placeholder="2000000"
+                    step="50000"
+                    className="brutal-input w-full pl-9 font-mono"
+                  />
+                  <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={data.unitPrice}
+                    onChange={(e) => handleChange('unitPrice', parseFloat(e.target.value) || 0)}
+                    placeholder="150000"
+                    step="10000"
+                    className="brutal-input w-full pl-9 font-mono"
+                  />
+                  <DollarSign className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -775,10 +821,8 @@ const ControlPanel = ({
               {/* Dynamic QR Input depending on type */}
               {data.qrCodeType === 'vietqr' ? (
                 <div className="text-[9.5px] border border-[#D8CBB5] p-3 rounded-xl font-medium bg-white leading-relaxed text-slate-650 font-serif">
-                  📖 <strong>Tiện ích đối soát:</strong> Mã QR sẽ mang đúng tổng số tiền học phí của tháng này: <strong>{ 
-                    sessions.filter(s => s.status === 'Học' || s.status === 'Bù')
-                      .reduce((sum, s) => sum + (s.price !== undefined && s.price !== null ? s.price : data.unitPrice), 0)
-                      .toLocaleString('vi-VN')
+                  📖 <strong>Tiện ích đối soát:</strong> Mã QR sẽ mang đúng tổng số tiền học phí của tháng này: <strong>{
+                    computeTotalFee(data, sessions).toLocaleString('vi-VN')
                   } đ</strong>. Phụ huynh chỉ cần dùng app ngân hàng quét là xong.
                 </div>
               ) : (

@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import { Download, Sparkles, AlertCircle, RefreshCw, PenTool, Image, BookOpen } from 'lucide-react';
 import ControlPanel from './components/ControlPanel';
 import ReceiptCard from './components/ReceiptCard';
+import { computeTotalFee } from './utils/fee';
 
 const THEMES = {
   eduBlue: {
@@ -87,6 +88,8 @@ function App() {
       teacherName: localStorage.getItem('ts_teacherName') || 'GV. Nguyễn Thanh Thúy',
       teacherPhone: localStorage.getItem('ts_teacherPhone') || '0978783058',
       unitPrice: 120000,
+      feeMode: 'perSession',
+      fixedTotalFee: 0,
       totalHours: '26.6',
       overviewNotes: [
         'Chưa chủ động trong quá trình học, thường xuyên thiếu BTVN, trong giờ học hay sao nhãng, nói chuyện riêng, không ôn bài về nhà.',
@@ -143,11 +146,7 @@ function App() {
   // Fetch VietQR dynamically as Base64 to prevent CORS taint on canvas export
   useEffect(() => {
     const timer = setTimeout(() => {
-      const attendedSessions = sessions.filter(s => s.status === 'Học' || s.status === 'Bù');
-      const totalFee = attendedSessions.reduce((sum, s) => {
-        const price = s.price !== undefined && s.price !== null ? s.price : data.unitPrice;
-        return sum + price;
-      }, 0);
+      const totalFee = computeTotalFee(data, sessions);
 
       if (data.qrCodeType === 'vietqr' && data.bankName && data.accountNumber) {
         const amount = totalFee;
@@ -185,6 +184,8 @@ function App() {
     data.studentName,
     data.accountHolder,
     data.unitPrice,
+    data.feeMode,
+    data.fixedTotalFee,
     sessions
   ]);
 

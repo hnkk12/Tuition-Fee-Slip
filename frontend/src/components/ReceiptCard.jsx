@@ -1,4 +1,5 @@
 import React from 'react';
+import { computeTotalFee } from '../utils/fee';
 
 const POPULAR_BANKS = [
   { id: 'MB', name: 'MB Bank (Quân Đội)', bin: '970422' },
@@ -27,6 +28,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
     teacherName,
     teacherPhone,
     unitPrice,
+    feeMode,
     totalHours,
     bankName,
     accountNumber,
@@ -46,12 +48,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
   );
   const attendedSessionsCount = attendedSessions.length;
 
-  const totalFee = React.useMemo(() => {
-    return attendedSessions.reduce((sum, s) => {
-      const price = s.price !== undefined && s.price !== null ? s.price : unitPrice;
-      return sum + price;
-    }, 0);
-  }, [attendedSessions, unitPrice]);
+  const totalFee = React.useMemo(() => computeTotalFee(data, sessions), [data, sessions]);
 
   const monthNum = parseInt(periodMonth, 10) || 1;
   const activeQrSrc = qrCodeType === 'vietqr' ? (qrBase64 || MOCK_QR_SVG) : (customQrUrl || MOCK_QR_SVG);
@@ -60,7 +57,7 @@ const ReceiptCard = React.forwardRef(({ data, sessions, theme, qrBase64 }, ref) 
   const infoRows = [
     { label: 'Họ và tên', value: studentName },
     { label: 'Lớp', value: className },
-    { label: 'Học phí', value: unitPrice ? `${formatCurrency(unitPrice)}/buổi` : '' },
+    { label: 'Học phí', value: feeMode !== 'fixed' && unitPrice ? `${formatCurrency(unitPrice)}/buổi` : '' },
     { label: 'Buổi học', value: `${attendedSessionsCount} buổi` },
     { label: 'Giờ học', value: totalHours ? `${totalHours} giờ` : '' },
   ].filter(row => row.value);
